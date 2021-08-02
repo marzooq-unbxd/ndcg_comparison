@@ -13,8 +13,7 @@ from sklearn.metrics import ndcg_score,dcg_score
 import numpy as np
 from search_api_testing import applyFilterStrategy_one_query
 
-isite_name =  "globalindustrial-com702401520254089"
-api_key = "c28b3b5ae91e7b48bf78825e7b63b483"
+
 import numpy as np
 def discountedCumulativeGain(result):
     dcg = []
@@ -127,7 +126,7 @@ def process_single_request(each_query, api_key, site_key, prod_per_page, timeout
 def process_query_df(query_list, site_key, api_key, rate_limit, prod_per_page):
     pool = TPool(rate_limit)
     uniq_quries = list(set([x.lower().strip() for x in query_list]))
-    rate_limiter = RateLimiter(max_calls=1, period=1)
+    rate_limiter = RateLimiter(max_calls=1, period=0.25)
     data_agg = []
     failed_query = []
     for i, batch_quries in enumerate(tqdm.tqdm(batch(uniq_quries, rate_limit))):
@@ -166,11 +165,8 @@ def process_query_df(query_list, site_key, api_key, rate_limit, prod_per_page):
 
     return df, fail_count
 
-import json
-def get_score(clicks, carts, orders):
-    return clicks * score_map["clicks"] + carts * score_map["carts"] + orders * score_map["orders"]
-score_map = {"clicks": 1, "carts": 8, "orders": 20}
-
+isite_name =  "globalindustrial-com702401520254089"
+api_key = "c28b3b5ae91e7b48bf78825e7b63b483"
 with open('query_files/globalindustrial-com702401520254089/hq/statisticalData.json', 'r') as f:
     stat_all = json.load(f)
 #q_list = ['execut desk paper trai', 'global drum storag cabinet']
@@ -182,7 +178,7 @@ query_cco = pd.read_csv('querycco1.csv')
 # pandarallel.initialize(progress_bar=True,nb_workers=3)
 # query_cco['score'] = query_cco.parallel_apply(lambda row: get_score(row['clicks'], row['carts'], row['orders']),
 #                                               axis=1)
-q_list=list(stat_all.keys())[0:20000]
+q_list=list(stat_all.keys())[0:3000]
 #q_list =[ 'master magnet ceram round base magnet rb20ccerbx 11 lbs. pull']
 #q_list = ['huski rack & wire pallet rack post protector 24"h']
 #answer = process_single_request('marbleiz top ergonom mat 3 foot wide cut blue', api_key, isite_name, 5, timeout=1, retry=False)
